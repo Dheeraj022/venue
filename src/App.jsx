@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSheetData } from './hooks/useSheetData';
-import { Hero } from './components/Hero';
+
 import { FilterBar } from './components/FilterBar';
 import { PropertyGrid } from './components/PropertyGrid';
 
@@ -73,9 +73,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans selection:bg-apple-blue/20 selection:text-apple-blue">
-      <Hero />
-
-      <main className="relative -mt-20 z-20">
+      <main className="relative z-20 pt-8">
         <FilterBar
           searchValue={searchValue}
           onSearchChange={setSearchValue}
