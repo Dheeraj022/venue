@@ -19,7 +19,7 @@ export const PropertyCard = ({ property, index }) => {
             {/* Content */}
             <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-semibold text-apple-dark line-clamp-1 group-hover:text-apple-blue transition-colors" title={property.name}>
+                    <h3 className="text-lg font-semibold text-apple-dark group-hover:text-apple-blue transition-colors" title={property.name}>
                         {property.name}
                     </h3>
                     <button
@@ -27,7 +27,7 @@ export const PropertyCard = ({ property, index }) => {
                             e.stopPropagation();
                             setShowContact(!showContact);
                         }}
-                        className={`text-sm font-semibold px-4 py-1.5 rounded-full transition-all duration-300 ${showContact
+                        className={`text-sm font-semibold px-4 py-1.5 rounded-full transition-all duration-300 ml-4 shrink-0 ${showContact
                             ? 'bg-gray-900 text-white shadow-md'
                             : 'bg-blue-50 text-apple-blue hover:bg-apple-blue hover:text-white'
                             }`}
@@ -37,9 +37,9 @@ export const PropertyCard = ({ property, index }) => {
                 </div>
 
                 <div className="flex flex-col gap-2 mt-2">
-                    <div className="flex items-center gap-2 text-apple-text-secondary text-sm">
-                        <MapPin className="w-4 h-4 shrink-0" />
-                        <span className="truncate">{property.location}, {property.city}</span>
+                    <div className="flex items-start gap-2 text-apple-text-secondary text-sm">
+                        <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{property.location}, {property.city}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-apple-text-secondary text-sm">
