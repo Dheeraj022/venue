@@ -69,31 +69,55 @@ export const PropertyCard = ({ property, index }) => {
                                 {property.contacts && property.contacts.length > 0 ? (
                                     property.contacts.map((contact, idx) => (
                                         <div key={idx} className={`${idx > 0 ? 'pt-4 border-t border-gray-50' : ''}`}>
-                                            <div className="flex items-center gap-3 text-apple-text mb-2">
-                                                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                                                    <User className="w-4 h-4 text-apple-blue" />
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 text-apple-text mb-1">
+                                                        <User className="w-3.5 h-3.5 text-apple-blue shrink-0" />
+                                                        <span className="text-xs text-apple-text-secondary font-medium uppercase tracking-wide">
+                                                            Person {property.contacts.length > 1 ? idx + 1 : ''}
+                                                        </span>
+                                                    </div>
+                                                    <p className="font-semibold text-sm text-apple-dark truncate pl-5.5">
+                                                        {contact.name || "N/A"}
+                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-2 pl-5.5 text-apple-text-secondary">
+                                                        <Phone className="w-3 h-3" />
+                                                        <span className="text-sm font-medium">{contact.phone || "N/A"}</span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-xs text-apple-text-secondary font-medium">Contact Person {property.contacts.length > 1 ? `#${idx + 1}` : ''}</p>
-                                                    <p className="font-semibold text-sm">{contact.name}</p>
-                                                </div>
-                                            </div>
 
-                                            <div className="flex items-center gap-3 text-apple-text">
-                                                <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-                                                    <Phone className="w-4 h-4 text-green-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-apple-text-secondary font-medium">Phone Number</p>
-                                                    <a href={`tel:${contact.phone}`} className="font-semibold text-sm hover:text-apple-blue transition-colors">
-                                                        {contact.phone}
-                                                    </a>
-                                                </div>
+                                                <a
+                                                    href={`tel:${contact.phone}`}
+                                                    className="flex items-center gap-2 bg-green-500 hover:bg-green-600 active:scale-95 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-md shadow-green-500/20 shrink-0"
+                                                >
+                                                    <Phone className="w-4 h-4 fill-current" />
+                                                    <span>Call Now</span>
+                                                </a>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-center text-gray-500 py-2">No contact information available</p>
+                                    <div className="flex flex-col items-center justify-center py-4 text-center">
+                                        <p className="text-sm text-gray-400">No contact information available</p>
+                                    </div>
+                                )}
+
+                                {/* Email Display */}
+                                {property.email && (
+                                    <div className="pt-4 border-t border-gray-50">
+                                        <div className="flex items-start gap-4">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 text-apple-text mb-1">
+                                                    <span className="text-xs text-apple-text-secondary font-medium uppercase tracking-wide">
+                                                        Email Address
+                                                    </span>
+                                                </div>
+                                                <a href={`mailto:${property.email}`} className="font-semibold text-sm text-apple-blue hover:underline truncate block">
+                                                    {property.email}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </motion.div>

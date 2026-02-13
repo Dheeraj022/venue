@@ -55,43 +55,52 @@ export const useSheetData = () => {
 
             const rawRows = parseCSV(text);
 
-            // Remove header row
-            const rows = rawRows.slice(1).map((c, index) => {
-                // Debug log for specific problem venue
-                if (c[0]?.includes("Ginger Udaipur")) {
-                    console.log("Ginger Debug:", {
-                        name: c[0],
-                        col3: c[3],
-                        col4: c[4],
-                        col5: c[5],
-                        col6: c[6],
-                        fullRow: c
+            if (rawRows.length < 2) {
+                setData([]);
+                setLoading(false);
+                return;
+            }
+
+            // Extract headers and trim them
+            const headers = rawRows[0].map(h => h.trim());
+            console.log("CSV Headers:", headers); // Debug log
+
+            const formattedData = rawRows.slice(1).map((row, index) => {
+                // Create a JSON object for the current row using headers
+                const item = {};
+                headers.forEach((header, i) => {
+                    item[header] = row[i]?.trim() || "";
+                });
+
+                if (index === 0) console.log("First Row Item:", item); // Debug log
+
+                // Extract fields using exact column names as requested
+                const contacts = [];
+
+                // Person 1
+                if (item["Person"] || item["Person Contact"]) {
+                    contacts.push({
+                        name: item["Person"] || "Not Available",
+                        phone: item["Person Contact"] || "Not Available"
                     });
                 }
 
-                // Map columns: 0:Name, 1:City, 2:Location, 3:Person, 4:Contact, 9:Rooms
-                // CSV Index: 
-                // 0: Venue Name
-                // 1: City
-                // 2: Location
-                // 3: Person
-                // 4: Person Contact
-                // 5: Person 2
-                // 6: Person Contact 2
-                // ...
-                // 9: No of Rooms
-
-                const contactName = c[3] || c[5] || "Not Available";
-                const contactPhone = c[4] || c[6] || "Not Available";
+                // Person 2
+                if (item["Person 2"] || item["Person Contact 2"]) {
+                    contacts.push({
+                        name: item["Person 2"] || "Not Available",
+                        phone: item["Person Contact 2"] || "Not Available"
+                    });
+                }
 
                 return {
                     id: index,
-                    name: c[0] || "Unknown Property",
-                    city: c[1] || "Unknown City",
-                    location: c[2] || "Unknown Location",
-                    contactName: contactName,
-                    contactPhone: contactPhone,
-                    rooms: parseInt(c[9]) || 0,
+                    name: item["Venue Name"] || "Unknown Property",
+                    city: item["City"] || "Unknown City",
+                    location: item["Location"] || "Unknown Location",
+                    email: item["Email Address"] || "", // Added as requested
+                    contacts: contacts,
+                    rooms: parseInt(item["No of Rooms"]) || 0,
                     // Placeholder image logic
                     image: `https://images.unsplash.com/photo-${[
                         '1613977257363-707ba9348227',
@@ -104,19 +113,18 @@ export const useSheetData = () => {
                         '1600566753190-17f0baa2a6c3'
                     ][index % 8]}?auto=format&fit=crop&w=800&q=80`
                 };
-            }).filter(row => row.name && row.name !== "Venue Name " && row.name !== "Unknown Property");
+            }).filter(row => row.name && row.name !== "Venue Name" && row.name !== "Unknown Property");
 
-            // Deduplicate properties by name, preferring those with contact info
+            // Deduplicate properties by name, preferring those with MORE contact info
             const uniqueProperties = new Map();
-            rows.forEach(row => {
+            formattedData.forEach(row => {
                 if (!uniqueProperties.has(row.name)) {
                     uniqueProperties.set(row.name, row);
                 } else {
                     const existing = uniqueProperties.get(row.name);
-                    const hasContact = row.contactName && row.contactName !== "Not Available";
-                    const existingHasContact = existing.contactName && existing.contactName !== "Not Available";
+                    const hasMoreContacts = row.contacts.length > existing.contacts.length;
 
-                    if (hasContact && !existingHasContact) {
+                    if (hasMoreContacts) {
                         uniqueProperties.set(row.name, row);
                     }
                 }
