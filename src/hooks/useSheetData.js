@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1NWi48LT1emRaWfXNzeobg4472zQ1432_8wicAMm0t2c/export?format=csv";
+const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRACTqdGEHmkSyEsL653V01OqjvNTrKh8K6lzycAjoFgDP8APNVSBaEuX4ikFt67Oi8QqAOt6RUcywY/pub?gid=0&single=true&output=csv";
 
 // Helper to parse CSV ignoring commas inside quotes
 const parseCSV = (text) => {
@@ -50,7 +50,14 @@ export const useSheetData = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${Date.now()}`);
+            // Add timestamp to bypass browser caching and use 'no-store'
+            const response = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${Date.now()}`, {
+                cache: "no-store",
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-cache'
+                }
+            });
             const text = await response.text();
 
             const rawRows = parseCSV(text);
