@@ -79,9 +79,6 @@ function App() {
         <FilterBar
           searchValue={searchValue}
           onSearchChange={setSearchValue}
-          locations={locations}
-          selectedLocation={selectedLocation}
-          onLocationChange={setSelectedLocation}
           cities={cities}
           selectedCity={selectedCity}
           onCityChange={setSelectedCity}
@@ -95,7 +92,6 @@ function App() {
           onSortChange={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
           onClear={() => {
             setSearchValue("");
-            setSelectedLocation("");
             setSelectedCity("");
             setMinRooms(0);
             setMaxRooms(600);

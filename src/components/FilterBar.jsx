@@ -6,9 +6,6 @@ import RangeSlider from './RangeSlider';
 export const FilterBar = ({
     searchValue,
     onSearchChange,
-    locations = [],
-    selectedLocation,
-    onLocationChange,
     cities = [],
     selectedCity,
     onCityChange,
@@ -20,6 +17,8 @@ export const FilterBar = ({
     onClear
 }) => {
     const [showRoomFilter, setShowRoomFilter] = useState(false);
+
+    const hasFilters = searchValue || selectedCity || (minRooms > 0) || (maxRooms < 600);
 
     return (
         <motion.div
@@ -60,20 +59,7 @@ export const FilterBar = ({
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
 
-                    {/* Location Dropdown */}
-                    <div className="relative group">
-                        <select
-                            value={selectedLocation}
-                            onChange={(e) => onLocationChange(e.target.value)}
-                            className="appearance-none bg-gray-50 hover:bg-gray-100 cursor-pointer py-3 pl-4 pr-10 rounded-xl text-sm font-medium text-apple-text outline-none border border-transparent focus:border-apple-blue/30 transition-all max-w-[200px]"
-                        >
-                            <option value="">All Locations</option>
-                            {locations.map(loc => (
-                                <option key={loc} value={loc} className="truncate">{loc}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    </div>
+
 
                     {/* Rooms Filter Toggle */}
                     <div className="relative">
@@ -129,6 +115,21 @@ export const FilterBar = ({
                         <ArrowUpDown className="w-4 h-4 text-gray-500" />
                         <span className="hidden sm:inline">{sortOrder === 'asc' ? 'Low to High' : 'High to Low'}</span>
                     </button>
+
+                    {/* Clear Filters Button */}
+                    <AnimatePresence>
+                        {hasFilters && (
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                onClick={onClear}
+                                className="px-4 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors font-medium text-sm whitespace-nowrap"
+                            >
+                                Clear Filters
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </motion.div>
