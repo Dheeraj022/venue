@@ -25,3 +25,31 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
 }
+
+/* Range Slider CSS */
+.thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  margin-top: -8px;
+  /* Corrects vertical alignment */
+}
+
+/* For Firefox */
+.thumb::-moz-range-thumb {
+  pointer-events: auto;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}

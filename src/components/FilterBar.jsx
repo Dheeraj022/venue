@@ -1,6 +1,7 @@
-import { useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Search, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ChevronDown, ArrowUpDown, X } from 'lucide-react';
+import RangeSlider from './RangeSlider';
 
 export const FilterBar = ({
     searchValue,
@@ -11,12 +12,15 @@ export const FilterBar = ({
     cities = [],
     selectedCity,
     onCityChange,
-    rooms = [],
-    selectedRooms,
+    minRooms,
+    maxRooms,
     onRoomsChange,
     sortOrder,
-    onSortChange
+    onSortChange,
+    onClear
 }) => {
+    const [showRoomFilter, setShowRoomFilter] = useState(false);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -24,7 +28,7 @@ export const FilterBar = ({
             transition={{ duration: 0.6, delay: 0.2 }}
             className="sticky top-4 z-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         >
-            <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/5 rounded-2xl p-4 flex flex-wrap gap-4 items-center justify-between">
+            <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/5 rounded-2xl p-4 flex flex-wrap gap-4 items-center justify-between relative">
 
                 {/* Search Input */}
                 <div className="relative flex-grow min-w-[200px] group">
@@ -71,19 +75,50 @@ export const FilterBar = ({
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
 
-                    {/* Rooms Dropdown */}
-                    <div className="relative group">
-                        <select
-                            value={selectedRooms}
-                            onChange={(e) => onRoomsChange(e.target.value)}
-                            className="appearance-none bg-gray-50 hover:bg-gray-100 cursor-pointer py-3 pl-4 pr-10 rounded-xl text-sm font-medium text-apple-text outline-none border border-transparent focus:border-apple-blue/30 transition-all"
+                    {/* Rooms Filter Toggle */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowRoomFilter(!showRoomFilter)}
+                            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${showRoomFilter || (minRooms > 0 || maxRooms < 600)
+                                ? 'bg-apple-blue text-white shadow-lg shadow-apple-blue/20'
+                                : 'bg-gray-50 hover:bg-gray-100 text-apple-text'
+                                }`}
                         >
-                            <option value="">No of Rooms</option>
-                            {rooms.map(room => (
-                                <option key={room} value={room}>{room} Rooms</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            <span>
+                                {minRooms > 0 || maxRooms < 600
+                                    ? `${minRooms} - ${maxRooms} Rooms`
+                                    : 'No of Rooms'}
+                            </span>
+                            <ChevronDown className={`w-4 h-4 transition-transform ${showRoomFilter ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <AnimatePresence>
+                            {showRoomFilter && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute right-0 top-full mt-2 p-4 bg-white rounded-2xl shadow-xl border border-gray-100 w-[240px] z-50 origin-top-right"
+                                >
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-sm font-semibold text-apple-text">Room Range</span>
+                                        <button
+                                            onClick={() => setShowRoomFilter(false)}
+                                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                        >
+                                            <X className="w-4 h-4 text-gray-400" />
+                                        </button>
+                                    </div>
+                                    <div className="px-2 pb-2">
+                                        <RangeSlider
+                                            min={0}
+                                            max={600}
+                                            onChange={(min, max) => onRoomsChange(min, max)}
+                                        />
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     {/* Sort Button */}

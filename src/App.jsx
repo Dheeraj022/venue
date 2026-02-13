@@ -11,13 +11,17 @@ function App() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [selectedRooms, setSelectedRooms] = useState("");
+  // const [selectedRooms, setSelectedRooms] = useState(""); // Removed single value
+  const [minRooms, setMinRooms] = useState(0);
+  const [maxRooms, setMaxRooms] = useState(600);
   const [sortOrder, setSortOrder] = useState("asc");
 
   // Extract unique values for dropdowns
   const locations = useMemo(() => [...new Set(data.map(item => item.location))], [data]);
   const cities = useMemo(() => [...new Set(data.map(item => item.city))], [data]);
-  const rooms = useMemo(() => [...new Set(data.map(item => item.rooms))].sort((a, b) => a - b), [data]);
+  // const rooms = useMemo(() => [...new Set(data.map(item => item.rooms))].sort((a,b) => a-b), [data]); // Not needed for slider
+
+  // find max rooms dynamically if needed, but 100 is safe upper bound for now based on data
 
   // Debounce search
   const [debouncedSearch, setDebouncedSearch] = useState(searchValue);
@@ -34,7 +38,7 @@ function App() {
 
     if (debouncedSearch) {
       result = result.filter(item =>
-        item.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+        item.name.toLowerCase().includes(debouncedSearch.trim().toLowerCase())
       );
     }
 
@@ -46,9 +50,10 @@ function App() {
       result = result.filter(item => item.city === selectedCity);
     }
 
-    if (selectedRooms) {
-      result = result.filter(item => String(item.rooms) === String(selectedRooms));
-    }
+    // Range Filter Logic
+    result = result.filter(item =>
+      item.rooms >= minRooms && item.rooms <= maxRooms
+    );
 
     return result.sort((a, b) => {
       return sortOrder === 'asc'
@@ -56,7 +61,7 @@ function App() {
         : b.rooms - a.rooms;
     });
 
-  }, [data, debouncedSearch, selectedLocation, selectedCity, selectedRooms, sortOrder]);
+  }, [data, debouncedSearch, selectedLocation, selectedCity, minRooms, maxRooms, sortOrder]);
 
   if (error) {
     return (
@@ -80,11 +85,22 @@ function App() {
           cities={cities}
           selectedCity={selectedCity}
           onCityChange={setSelectedCity}
-          rooms={rooms}
-          selectedRooms={selectedRooms}
-          onRoomsChange={setSelectedRooms}
+          minRooms={minRooms}
+          maxRooms={maxRooms}
+          onRoomsChange={(min, max) => {
+            setMinRooms(min);
+            setMaxRooms(max);
+          }}
           sortOrder={sortOrder}
           onSortChange={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+          onClear={() => {
+            setSearchValue("");
+            setSelectedLocation("");
+            setSelectedCity("");
+            setMinRooms(0);
+            setMaxRooms(600);
+            setSortOrder("asc");
+          }}
         />
 
         <PropertyGrid
