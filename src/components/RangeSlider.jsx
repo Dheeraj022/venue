@@ -32,7 +32,7 @@ const RangeSlider = ({ min, max, onChange }) => {
     }, [maxVal, min, max]);
 
     return (
-        <div className="relative w-full max-w-[200px] h-12 flex items-center justify-center">
+        <div className="relative w-full max-w-[200px] h-auto flex flex-col items-center justify-center py-4">
             <input
                 type="range"
                 min={min}
@@ -75,6 +75,45 @@ const RangeSlider = ({ min, max, onChange }) => {
                 </div>
                 <div className="absolute -top-5 w-full text-center text-xs text-apple-text font-semibold">
                     Rooms
+                </div>
+            </div>
+            <div className="flex items-center justify-between w-full mt-8 gap-3">
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">Min</span>
+                    <input
+                        type="number"
+                        min={min}
+                        max={maxVal - 1}
+                        value={minVal}
+                        onChange={(e) => {
+                            const value = Math.max(Number(e.target.value), min);
+                            // Allow typing but clamp for safety on blur or submit if needed
+                            // For now, instant update with limit
+                            const clamped = Math.min(value, maxVal - 1);
+                            setMinVal(clamped);
+                            minValRef.current = clamped;
+                            onChange(clamped, maxVal);
+                        }}
+                        className="w-20 pl-8 pr-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-apple-blue transition-colors text-center"
+                    />
+                </div>
+                <div className="w-2 h-0.5 bg-gray-200 rounded-full"></div>
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">Max</span>
+                    <input
+                        type="number"
+                        min={minVal + 1}
+                        max={max}
+                        value={maxVal}
+                        onChange={(e) => {
+                            const value = Math.min(Number(e.target.value), max);
+                            const clamped = Math.max(value, minVal + 1);
+                            setMaxVal(clamped);
+                            maxValRef.current = clamped;
+                            onChange(minVal, clamped);
+                        }}
+                        className="w-20 pl-8 pr-2 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-apple-blue transition-colors text-center"
+                    />
                 </div>
             </div>
         </div>
