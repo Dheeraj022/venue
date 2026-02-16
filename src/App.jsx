@@ -3,9 +3,13 @@ import { useSheetData } from './hooks/useSheetData';
 
 import { FilterBar } from './components/FilterBar';
 import { PropertyGrid } from './components/PropertyGrid';
+import VenueForm from './components/VenueForm';
 
 function App() {
   const { data, loading, error } = useSheetData();
+
+  // View State: 'list' | 'form'
+  const [view, setView] = useState('list');
 
   // Filter States
   const [searchValue, setSearchValue] = useState("");
@@ -73,37 +77,60 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans selection:bg-apple-blue/20 selection:text-apple-blue">
-      <main className="relative z-20 pt-8">
-        <FilterBar
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          cities={cities}
-          selectedCity={selectedCity}
-          onCityChange={setSelectedCity}
-          minRooms={minRooms}
-          maxRooms={maxRooms}
-          onRoomsChange={(min, max) => {
-            setMinRooms(min);
-            setMaxRooms(max);
-          }}
-          sortOrder={sortOrder}
-          onSortChange={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-          onClear={() => {
-            setSearchValue("");
-            setSelectedCity("");
-            setMinRooms(0);
-            setMaxRooms(600);
-            setSortOrder("desc");
-          }}
-        />
+      <header className="bg-white shadow-sm border-b border-gray-100 z-30 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <h1 className="text-xl font-bold text-gray-900 cursor-pointer" onClick={() => setView('list')}>
+            Venue Manager
+          </h1>
+          <button
+            onClick={() => setView(view === 'list' ? 'form' : 'list')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === 'form'
+                ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
+          >
+            {view === 'list' ? '+ Add Venue' : 'Back to List'}
+          </button>
+        </div>
+      </header>
 
-        <PropertyGrid
-          properties={filteredData}
-          loading={loading}
-        />
+      <main className="relative z-20 pt-8 pb-20">
+        {view === 'list' ? (
+          <>
+            <FilterBar
+              searchValue={searchValue}
+              onSearchChange={setSearchValue}
+              cities={cities}
+              selectedCity={selectedCity}
+              onCityChange={setSelectedCity}
+              minRooms={minRooms}
+              maxRooms={maxRooms}
+              onRoomsChange={(min, max) => {
+                setMinRooms(min);
+                setMaxRooms(max);
+              }}
+              sortOrder={sortOrder}
+              onSortChange={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              onClear={() => {
+                setSearchValue("");
+                setSelectedCity("");
+                setMinRooms(0);
+                setMaxRooms(600);
+                setSortOrder("desc");
+              }}
+            />
+
+            <PropertyGrid
+              properties={filteredData}
+              loading={loading}
+            />
+          </>
+        ) : (
+          <VenueForm />
+        )}
       </main>
 
-      <footer className="py-10 text-center text-apple-text-secondary text-sm">
+      <footer className="py-10 text-center text-apple-text-secondary text-sm border-t border-gray-200">
         <p>&copy; {new Date().getFullYear()} Premium Properties. All rights reserved.</p>
       </footer>
     </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
-const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRACTqdGEHmkSyEsL653V01OqjvNTrKh8K6lzycAjoFgDP8APNVSBaEuX4ikFt67Oi8QqAOt6RUcywY/pub?gid=0&single=true&output=csv";
+// Use environment variable or fallback to the old hardcoded URL
+const GOOGLE_SHEET_CSV_URL = import.meta.env.VITE_GOOGLE_SHEET_CSV_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vR1rlv93biypXU2D6GTiccDKgLvJd3GiMRE-r8W1Q5iNrwr0k73yRvlIj9fFXbiMp8TFT1q6NdKczQw/pub?output=csv";
 
 // Helper to parse CSV ignoring commas inside quotes
 const parseCSV = (text) => {
@@ -62,7 +63,8 @@ export const useSheetData = () => {
 
             const rawRows = parseCSV(text);
 
-            if (rawRows.length < 2) {
+            // Basic validation: need at least header + 1 row (or just header if empty)
+            if (rawRows.length < 1) {
                 setData([]);
                 setLoading(false);
                 return;
@@ -105,7 +107,8 @@ export const useSheetData = () => {
                     name: item["Venue Name"] || "Unknown Property",
                     city: item["City"] || "Unknown City",
                     location: item["Location"] || "Unknown Location",
-                    email: item["Email Address"] || "", // Added as requested
+                    email: item["Email"] || item["Email Address"] || "", // Support both
+                    email2: item["Email 2"] || "", // Added support for Email 2
                     contacts: contacts,
                     rooms: parseInt(item["No of Rooms"]) || 0,
                     // Placeholder image logic
