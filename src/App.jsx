@@ -14,7 +14,7 @@ function App() {
   // const [selectedRooms, setSelectedRooms] = useState(""); // Removed single value
   const [minRooms, setMinRooms] = useState(0);
   const [maxRooms, setMaxRooms] = useState(600);
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   // Extract unique values for dropdowns
   const locations = useMemo(() => [...new Set(data.map(item => item.location))], [data]);
@@ -93,7 +93,7 @@ function App() {
             setSelectedCity("");
             setMinRooms(0);
             setMaxRooms(600);
-            setSortOrder("asc");
+            setSortOrder("desc");
           }}
         />
 
