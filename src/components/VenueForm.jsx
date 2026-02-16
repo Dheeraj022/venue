@@ -37,9 +37,7 @@ const VenueForm = () => {
     const validateForm = () => {
         if (!formData.venueName) return 'Venue Name is required';
         if (!formData.city) return 'City is required';
-        if (!formData.person) return 'Contact Person is required';
-        if (!formData.email) return 'Email is required';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return 'Invalid email format';
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return 'Invalid email format';
         if (formData.email2 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email2)) return 'Invalid secondary email format';
         return null;
     };
@@ -146,7 +144,7 @@ const VenueForm = () => {
 
                     {/* Contact Person 1 */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Contact Person *</label>
+                        <label className="text-sm font-medium text-gray-700">Contact Person</label>
                         <input
                             type="text"
                             name="person"
@@ -196,7 +194,7 @@ const VenueForm = () => {
 
                     {/* Email */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Email Address *</label>
+                        <label className="text-sm font-medium text-gray-700">Email Address</label>
                         <input
                             type="email"
                             name="email"

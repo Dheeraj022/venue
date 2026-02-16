@@ -1,139 +1,115 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useSheetData } from './hooks/useSheetData';
-
-import { FilterBar } from './components/FilterBar';
-import { PropertyGrid } from './components/PropertyGrid';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import VenueForm from './components/VenueForm';
+import { VenueList } from './components/VenueList';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
+import { supabase } from './supabaseClient';
 
-function App() {
-  const { data, loading, error } = useSheetData();
+// Header component to handle navigation state highlighting
+const Header = () => {
+  const location = useLocation();
+  const [session, setSession] = useState(null);
 
-  // View State: 'list' | 'form'
-  const [view, setView] = useState('list');
-
-  // Filter States
-  const [searchValue, setSearchValue] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  // const [selectedRooms, setSelectedRooms] = useState(""); // Removed single value
-  const [minRooms, setMinRooms] = useState(0);
-  const [maxRooms, setMaxRooms] = useState(600);
-  const [sortOrder, setSortOrder] = useState("desc");
-
-  // Extract unique values for dropdowns
-  const locations = useMemo(() => [...new Set(data.map(item => item.location))], [data]);
-  const cities = useMemo(() => [...new Set(data.map(item => item.city))], [data]);
-  // const rooms = useMemo(() => [...new Set(data.map(item => item.rooms))].sort((a,b) => a-b), [data]); // Not needed for slider
-
-  // find max rooms dynamically if needed, but 100 is safe upper bound for now based on data
-
-  // Debounce search
-  const [debouncedSearch, setDebouncedSearch] = useState(searchValue);
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchValue);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [searchValue]);
-
-  // Filter Logic
-  const filteredData = useMemo(() => {
-    let result = data;
-
-    if (debouncedSearch) {
-      result = result.filter(item =>
-        item.name.toLowerCase().includes(debouncedSearch.trim().toLowerCase())
-      );
-    }
-
-    if (selectedLocation) {
-      result = result.filter(item => item.location === selectedLocation);
-    }
-
-    if (selectedCity) {
-      result = result.filter(item => item.city === selectedCity);
-    }
-
-    // Range Filter Logic
-    result = result.filter(item =>
-      item.rooms >= minRooms && item.rooms <= maxRooms
-    );
-
-    return result.sort((a, b) => {
-      return sortOrder === 'asc'
-        ? a.rooms - b.rooms
-        : b.rooms - a.rooms;
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
     });
 
-  }, [data, debouncedSearch, selectedLocation, selectedCity, minRooms, maxRooms, sortOrder]);
+    // Listen for changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen text-red-500">
-        <p>{error}</p>
-      </div>
-    );
-  }
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans selection:bg-apple-blue/20 selection:text-apple-blue">
-      <header className="bg-white shadow-sm border-b border-gray-100 z-30 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900 cursor-pointer" onClick={() => setView('list')}>
-            Venue Manager
-          </h1>
-          <button
-            onClick={() => setView(view === 'list' ? 'form' : 'list')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === 'form'
-                ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-          >
-            {view === 'list' ? '+ Add Venue' : 'Back to List'}
-          </button>
+    <header className="bg-white shadow-sm border-b border-gray-100 z-30 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <Link to="/" className="text-xl font-bold text-gray-900 cursor-pointer">
+          Venue Manager
+        </Link>
+
+        <div className="flex items-center gap-4">
+          {/* Show 'Back to List' on specific pages */}
+          {(location.pathname === '/add-venue' || location.pathname === '/login') && (
+            <Link
+              to="/"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-800 hover:bg-gray-200"
+            >
+              Back to List
+            </Link>
+          )}
+
+          {/* Auth Buttons */}
+          {!session ? (
+            location.pathname !== '/login' && (
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Login
+              </Link>
+            )
+          ) : (
+            <>
+              {/* Show Add Venue only if logged in and not already on the page */}
+              {location.pathname !== '/add-venue' && (
+                <Link
+                  to="/add-venue"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-50 text-blue-600 hover:bg-blue-100"
+                >
+                  + Add Venue
+                </Link>
+              )}
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-colors text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
-      </header>
+      </div>
+    </header>
+  );
+};
 
-      <main className="relative z-20 pt-8 pb-20">
-        {view === 'list' ? (
-          <>
-            <FilterBar
-              searchValue={searchValue}
-              onSearchChange={setSearchValue}
-              cities={cities}
-              selectedCity={selectedCity}
-              onCityChange={setSelectedCity}
-              minRooms={minRooms}
-              maxRooms={maxRooms}
-              onRoomsChange={(min, max) => {
-                setMinRooms(min);
-                setMaxRooms(max);
-              }}
-              sortOrder={sortOrder}
-              onSortChange={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              onClear={() => {
-                setSearchValue("");
-                setSelectedCity("");
-                setMinRooms(0);
-                setMaxRooms(600);
-                setSortOrder("desc");
-              }}
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen bg-gray-50 font-sans selection:bg-apple-blue/20 selection:text-apple-blue">
+        <Header />
+
+        <main className="relative z-20 pt-8 pb-20">
+          <Routes>
+            <Route path="/" element={<VenueList />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/add-venue"
+              element={
+                <ProtectedRoute>
+                  <VenueForm />
+                </ProtectedRoute>
+              }
             />
+          </Routes>
+        </main>
 
-            <PropertyGrid
-              properties={filteredData}
-              loading={loading}
-            />
-          </>
-        ) : (
-          <VenueForm />
-        )}
-      </main>
-
-      <footer className="py-10 text-center text-apple-text-secondary text-sm border-t border-gray-200">
-        <p>&copy; {new Date().getFullYear()} Premium Properties. All rights reserved.</p>
-      </footer>
-    </div>
+        <footer className="py-10 text-center text-apple-text-secondary text-sm border-t border-gray-200">
+          <p>&copy; {new Date().getFullYear()} Premium Properties. All rights reserved.</p>
+        </footer>
+      </div>
+    </Router>
   );
 }
 
