@@ -17,6 +17,7 @@ export const FilterBar = ({
     onClear
 }) => {
     const [showRoomFilter, setShowRoomFilter] = useState(false);
+    const [showCityDropdown, setShowCityDropdown] = useState(false);
 
     const hasFilters = searchValue || selectedCity || (minRooms > 0) || (maxRooms < 600);
 
@@ -45,18 +46,56 @@ export const FilterBar = ({
                 <div className="flex flex-wrap gap-3 items-center flex-grow sm:flex-grow-0">
 
                     {/* City Dropdown */}
-                    <div className="relative group">
-                        <select
-                            value={selectedCity}
-                            onChange={(e) => onCityChange(e.target.value)}
-                            className="appearance-none bg-gray-50 hover:bg-gray-100 cursor-pointer py-3 pl-4 pr-10 rounded-xl text-sm font-medium text-apple-text outline-none border border-transparent focus:border-apple-blue/30 transition-all"
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowCityDropdown(!showCityDropdown)}
+                            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${showCityDropdown || selectedCity
+                                ? 'bg-apple-blue text-white shadow-lg shadow-apple-blue/20'
+                                : 'bg-gray-50 hover:bg-gray-100 text-apple-text'
+                                }`}
                         >
-                            <option value="">All Cities</option>
-                            {cities.map(city => (
-                                <option key={city} value={city}>{city}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            <span>{selectedCity || 'All Cities'}</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform ${showCityDropdown ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <AnimatePresence>
+                            {showCityDropdown && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute left-0 top-full mt-2 bg-white rounded-2xl shadow-xl shadow-black/10 border border-gray-100 w-[200px] z-50 origin-top-left ring-1 ring-black/5 overflow-hidden"
+                                >
+                                    <div className="max-h-[300px] overflow-y-auto py-2">
+                                        <button
+                                            onClick={() => {
+                                                onCityChange("");
+                                                setShowCityDropdown(false);
+                                            }}
+                                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 flex items-center justify-between ${selectedCity === "" ? 'font-semibold text-apple-blue bg-blue-50/50' : 'text-apple-text'
+                                                }`}
+                                        >
+                                            All Cities
+                                            {selectedCity === "" && <div className="w-1.5 h-1.5 rounded-full bg-apple-blue" />}
+                                        </button>
+                                        {cities.map(city => (
+                                            <button
+                                                key={city}
+                                                onClick={() => {
+                                                    onCityChange(city);
+                                                    setShowCityDropdown(false);
+                                                }}
+                                                className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 flex items-center justify-between ${selectedCity === city ? 'font-semibold text-apple-blue bg-blue-50/50' : 'text-apple-text'
+                                                    }`}
+                                            >
+                                                {city}
+                                                {selectedCity === city && <div className="w-1.5 h-1.5 rounded-full bg-apple-blue" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
 
