@@ -84,15 +84,15 @@ export const FilterBar = ({
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 top-full mt-2 p-4 bg-white rounded-2xl shadow-xl border border-gray-100 w-[240px] z-50 origin-top-right"
+                                    className="absolute right-0 top-full mt-3 p-4 bg-white rounded-2xl shadow-xl shadow-black/10 border border-gray-100 w-[280px] z-50 origin-top-right ring-1 ring-black/5"
                                 >
-                                    <div className="flex justify-between items-center mb-4">
-                                        <span className="text-sm font-semibold text-apple-text">Room Range</span>
+                                    <div className="flex justify-between items-center mb-2 px-2">
+                                        <span className="text-sm font-semibold text-apple-text tracking-wide">Room Range</span>
                                         <button
                                             onClick={() => setShowRoomFilter(false)}
-                                            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                            className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
                                         >
-                                            <X className="w-4 h-4 text-gray-400" />
+                                            <X className="w-4 h-4" />
                                         </button>
                                     </div>
                                     <div className="px-2 pb-2">
