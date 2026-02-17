@@ -91,6 +91,12 @@ export const VenueList = () => {
                 }}
             />
 
+            <div className="max-w-7xl mx-auto px-6 mt-8 mb-2">
+                <p className="text-apple-text-secondary font-medium">
+                    Showing <span className="text-apple-dark font-semibold">{filteredData.length}</span> properties
+                </p>
+            </div>
+
             <PropertyGrid
                 properties={filteredData}
                 loading={loading}
