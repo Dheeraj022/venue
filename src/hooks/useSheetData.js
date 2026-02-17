@@ -125,22 +125,7 @@ export const useSheetData = () => {
                 };
             }).filter(row => row.name && row.name !== "Venue Name" && row.name !== "Unknown Property");
 
-            // Deduplicate properties by name, preferring those with MORE contact info
-            const uniqueProperties = new Map();
-            formattedData.forEach(row => {
-                if (!uniqueProperties.has(row.name)) {
-                    uniqueProperties.set(row.name, row);
-                } else {
-                    const existing = uniqueProperties.get(row.name);
-                    const hasMoreContacts = row.contacts.length > existing.contacts.length;
-
-                    if (hasMoreContacts) {
-                        uniqueProperties.set(row.name, row);
-                    }
-                }
-            });
-
-            setData(Array.from(uniqueProperties.values()));
+            setData(formattedData);
             setError(null);
         } catch (err) {
             console.error("Error fetching sheet data:", err);
