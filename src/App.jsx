@@ -61,31 +61,31 @@ const Header = () => {
     }
   };
 
+  // Check admin session (passkey session)
+  const checkAdmin = () => {
+    const isAdmin = localStorage.getItem('admin_session') === 'true';
+    const expiry = localStorage.getItem('admin_session_expiry');
+
+    if (isAdmin && expiry) {
+      const diff = new Date(expiry) - new Date();
+      if (diff > 0) {
+        setAdminSession(true);
+        setSessionTimeLeft(Math.floor(diff / 1000));
+      } else {
+        // Session expired
+        handleLogout();
+      }
+    } else {
+      setAdminSession(false);
+      setSessionTimeLeft(0);
+    }
+  };
+
   useEffect(() => {
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
-
-    // Check admin session (passkey session)
-    const checkAdmin = () => {
-      const isAdmin = localStorage.getItem('admin_session') === 'true';
-      const expiry = localStorage.getItem('admin_session_expiry');
-
-      if (isAdmin && expiry) {
-        const diff = new Date(expiry) - new Date();
-        if (diff > 0) {
-          setAdminSession(true);
-          setSessionTimeLeft(Math.floor(diff / 1000));
-        } else {
-          // Session expired
-          handleLogout();
-        }
-      } else {
-        setAdminSession(false);
-        setSessionTimeLeft(0);
-      }
-    };
 
     checkAdmin();
     const interval = setInterval(checkAdmin, 10000); // Check every 10s for broad session status
@@ -115,9 +115,10 @@ const Header = () => {
     };
   }, []);
 
-  // Close menu on navigation
+  // Close menu and update session status on navigation
   useEffect(() => {
     setIsMenuOpen(false);
+    checkAdmin();
   }, [location.pathname]);
 
   // Timer effects
