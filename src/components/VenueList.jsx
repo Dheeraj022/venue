@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useSheetData } from '../hooks/useSheetData';
 import { FilterBar } from './FilterBar';
 import { PropertyGrid } from './PropertyGrid';

@@ -196,11 +196,18 @@ const Header = () => {
           )}
 
           {adminSession && !session && (
-            <div className="flex flex-col items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
-              <span className="text-[9px] uppercase font-bold text-blue-600 leading-tight">Session Ends In</span>
-              <span className="text-xs font-mono font-bold text-blue-700 leading-tight">
-                {formatSessionTime(sessionTimeLeft)}
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
+                <span className="text-[9px] uppercase font-bold text-blue-600 leading-tight">Session Ends In</span>
+                <span className="text-xs font-mono font-bold text-blue-700 leading-tight">
+                  {formatSessionTime(sessionTimeLeft)}
+                </span>
+              </div>
+              {location.pathname !== '/add-venue' && (
+                <Link to="/add-venue" className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 shadow-md">
+                  + Add Venue
+                </Link>
+              )}
             </div>
           )}
 
@@ -235,7 +242,7 @@ const Header = () => {
               <button onClick={handleGenerateKey} disabled={generating} className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-orange-50 text-orange-600 hover:bg-orange-100 disabled:opacity-50">
                 {generating ? '...' : 'Generate Passkey'}
               </button>
-              {location.pathname !== '/add-venue' && (
+              {session && location.pathname !== '/add-venue' && (
                 <Link to="/add-venue" className="px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-50 text-blue-600 hover:bg-blue-100">
                   + Add Venue
                 </Link>
@@ -320,7 +327,7 @@ const Header = () => {
                     <button onClick={handleGenerateKey} disabled={generating} className="w-full py-3 px-4 rounded-xl bg-orange-50 text-orange-600 font-semibold text-center border border-orange-100">
                       {generating ? 'Generating...' : 'Generate New Passkey'}
                     </button>
-                    {location.pathname !== '/add-venue' && (
+                    {(session || adminSession) && location.pathname !== '/add-venue' && (
                       <Link to="/add-venue" className="block w-full py-3 px-4 rounded-xl bg-blue-50 text-blue-600 font-semibold text-center border border-blue-100">
                         + Add New Venue
                       </Link>
@@ -360,11 +367,9 @@ function App() {
             <Route
               path="/add-venue"
               element={
-                <ProtectedRoute>
-                  <PasskeyProtectedRoute>
-                    <VenueForm />
-                  </PasskeyProtectedRoute>
-                </ProtectedRoute>
+                <PasskeyProtectedRoute>
+                  <VenueForm />
+                </PasskeyProtectedRoute>
               }
             />
           </Routes>
