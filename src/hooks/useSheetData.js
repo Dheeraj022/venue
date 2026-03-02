@@ -108,7 +108,7 @@ export const useSheetData = () => {
                     city: item["City"] || "Unknown City",
                     location: item["Location"] || "Unknown Location",
                     email: item["Email"] || item["Email Address"] || "", // Support both
-                    email2: item["Email 2"] || "", // Added support for Email 2
+                    email2: item["Email 2"] || row[8] || "", // Map to index 8 if header is missing
                     contacts: contacts,
                     rooms: parseInt(item["No of Rooms"]) || 0,
                     // Placeholder image logic

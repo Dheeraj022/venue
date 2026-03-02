@@ -54,13 +54,14 @@ const VenueForm = () => {
         setStatus({ type: '', message: '' });
 
         try {
+            console.log("Submitting Venue Data:", formData);
             // Use text/plain to avoid CORS preflight options request which GAS doesn't handle
-            const response = await fetch(import.meta.env.VITE_GOOGLE_SCRIPT_URL, {
+            await fetch(import.meta.env.VITE_GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify(formData),
                 mode: "no-cors", // Essential for GAS if not properly handling CORS headers
                 headers: {
-                    "Content-Type": "text/plain;charset=utf-8",
+                    "Content-Type": "text/plain",
                 },
             });
 
